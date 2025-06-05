@@ -156,7 +156,7 @@ const App = () => {
         </div>
       </DashboardLayout>
 
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-right" theme="colored" />
     </motion.div>
   );
 };

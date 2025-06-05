@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-
-const fakeAIResponse = (kpi) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(`Recommendation for "${kpi}": Focus on reducing time-to-fill by optimizing interview rounds.`);
-    }, 1500);
-  });
-};
+import { getAIRecommendation } from "../../utils/fakeAPI";
+import TextInput from "../ui/TextInput";
+import PrimaryButton from "../ui/PrimaryButton";
 
 export const KPIInputForm = () => {
   const [kpi, setKpi] = useState("");
@@ -18,7 +13,7 @@ export const KPIInputForm = () => {
     e.preventDefault();
 
     if (!kpi.trim()) {
-      toast.error("KPI name cannot be empty");
+      toast.warn("Please enter a KPI name.");
       return;
     }
 
@@ -26,11 +21,12 @@ export const KPIInputForm = () => {
     setResponse("");
 
     try {
-      const result = await fakeAIResponse(kpi);
+      toast.info("Requesting recommendation...");
+      const result = await getAIRecommendation(kpi);
       setResponse(result);
-      toast.success("AI recommendation ready");
-    } catch {
-      toast.error("Something went wrong");
+      toast.success("AI recommendation received!");
+    } catch (error) {
+      toast.error(error.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -42,21 +38,15 @@ export const KPIInputForm = () => {
         <label className="block text-sm font-medium text-gray-700">
           Enter KPI name
         </label>
-        <input
-          type="text"
+        <TextInput
           value={kpi}
           onChange={(e) => setKpi(e.target.value)}
-          className="w-full p-2 border rounded-md text-sm"
           placeholder="e.g., Time to Fill"
         />
 
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-          disabled={loading}
-        >
-          {loading ? "Thinking..." : "Get Recommendation"}
-        </button>
+        <PrimaryButton type="submit" loading={loading}>
+          Get Recommendation
+        </PrimaryButton>
       </form>
 
       {response && (
@@ -66,4 +56,4 @@ export const KPIInputForm = () => {
       )}
     </div>
   );
-};
+}; 
